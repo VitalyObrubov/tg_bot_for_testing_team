@@ -4,7 +4,7 @@ from aiogram import Bot as aioBot, Dispatcher
 from aiogram.types import BotCommand
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from globals import Bot, bot
+from app.globals import Bot, bot
 from config.config_reader import setup_config
 from app.handlers.start_end import register_handlers_common
 

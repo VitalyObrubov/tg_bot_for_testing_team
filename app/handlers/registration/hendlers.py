@@ -5,7 +5,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
 from typing import Union
 
-from globals import bot
+from app.globals import bot
 from app.handlers.registration.answers import *
 from app.handlers.registration.messages import *
 from app.handlers.registration.dataclassess import tgUser
