@@ -5,11 +5,13 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
 from typing import Union
 
+from globals import bot
 from app.handlers.registration.answers import *
 from app.handlers.registration.messages import *
 from app.handlers.registration.dataclassess import tgUser
 from app.handlers.keyboard import make_keyboard
 from app.utils import is_email, is_mak
+
 
 
 class RegOrder(StatesGroup):
@@ -58,7 +60,7 @@ async def registration_approval(message: types.Message, state: FSMContext):
 async def registration_phone(message: Union[types.Message, types.Contact], state: FSMContext):
     if message.contact != None: # Был прислан контакт
         await state.update_data(phone=message.contact.phone_number)
-        keyboard = make_keyboard(CANCEL,"usual",1)
+        keyboard = make_keyboard(EMPTY,"usual",1)
         await message.answer(ASK_FIO, reply_markup=keyboard)
         await RegOrder.next()
     elif message.text == CANCEL[0]: # Отказались отправить телефон
@@ -72,8 +74,8 @@ async def registration_fio(message: types.Message, state: FSMContext):
         await registration_stop(message, state)
     else:
         await state.update_data(fio=message.text)
-        keyboard = make_keyboard(CANCEL,"usual",1)
-        await message.answer(ASK_EMAIL, reply_markup=keyboard)
+        keyboard = make_keyboard(EMPTY,"usual",1)
+        await message.answer(ASK_EMAIL, reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
         await RegOrder.next()
 
 async def registration_email(message: types.Message, state: FSMContext):
@@ -108,7 +110,7 @@ async def registration_model(message: types.Message, state: FSMContext):
     elif message.text in TV_BOXES: # введеная модель есть в списке
         await state.update_data(tvbox_model=message.text)
         keyboard = make_keyboard(MRF,"usual",3)
-        await message.answer(ASK_MRF, reply_markup=keyboard)
+        await message.answer(ASK_MRF, reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
         await RegOrder.next()
     else:
         await message.answer(ASK_REENTER)
@@ -118,8 +120,8 @@ async def registration_mrf(message: types.Message, state: FSMContext):
         await registration_stop(message, state)
     elif message.text in MRF: # введеная модель есть в списке
         await state.update_data(mrf=message.text)
-        keyboard = make_keyboard(CANCEL,"usual",1)
-        await message.answer(ASK_SUBSCRIBER, reply_markup=keyboard)
+        keyboard = make_keyboard(EMPTY,"usual",1)
+        await message.answer(ASK_SUBSCRIBER, reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
         await RegOrder.next()
     else:
         await message.answer(ASK_REENTER)
@@ -129,8 +131,8 @@ async def registration_subscriber(message: types.Message, state: FSMContext):
         await registration_stop(message, state)
     else:
         await state.update_data(subscr_id=message.text)
-        keyboard = make_keyboard(CANCEL,"usual",1)
-        await message.answer(ASK_MAK, reply_markup=keyboard)
+        keyboard = make_keyboard(EMPTY,"usual",1)
+        await message.answer(ASK_MAK, reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
         await RegOrder.next()
 
 async def registration_mak(message: types.Message, state: FSMContext):
@@ -142,11 +144,13 @@ async def registration_mak(message: types.Message, state: FSMContext):
     else: # ввели верный mac
         await state.update_data(mac=message.text)
         keyboard = make_keyboard(OK,"usual",2)
-        await message.answer(FIN_MESS, reply_markup=keyboard)
-        await message.answer(FIN_MESS2, reply_markup=keyboard)
+        await message.answer(FIN_MESS.format(123456), reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
+        await message.answer(FIN_MESS2.format(bot.config.contacts.common_chanel), reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
         await RegOrder.next()
 
 async def registration_finish(message: types.Message, state: FSMContext):
+    user_data = await state.get_data()
+    await bot.aiobot.send_message(bot.config.contacts.admin_chanel_id, str(user_data))
     from app.handlers.start_end import cmd_start
     await cmd_start(message, state)
 

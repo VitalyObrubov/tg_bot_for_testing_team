@@ -4,15 +4,9 @@ from aiogram import Bot as aioBot, Dispatcher
 from aiogram.types import BotCommand
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-from config.config_reader import Config, setup_config
+from globals import Bot, bot
+from config.config_reader import setup_config
 from app.handlers.start_end import register_handlers_common
-
-class Bot():
-    aiobot: Optional[aioBot] = None
-    config: Optional[Config] = None
-    dp: Optional[Dispatcher] = None
-    logger: Optional[logging.Logger] = None
-    #database: Optional[Database] = None
 
 def setup_logging(bot: Bot) -> None:
     # Настройка логирования в stdout
@@ -36,8 +30,6 @@ async def set_commands(bot: aioBot):
     ]
     await bot.set_my_commands(commands)
 
-
-bot = Bot()
 
 async def setup_bot(config_path: str) -> Bot:
     setup_config(bot, config_path) 

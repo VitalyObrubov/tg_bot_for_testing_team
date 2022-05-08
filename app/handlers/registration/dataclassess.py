@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
-from aiogram.types import Message
 from aiogram.types.user import User as aioUser
 
 @dataclass
@@ -15,9 +13,5 @@ class tgUser:
         self.phone = None
 
 
-@dataclass
-class User():
-    tg_user: tgUser
-    id: int
 
 

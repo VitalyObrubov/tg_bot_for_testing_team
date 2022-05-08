@@ -1,3 +1,4 @@
+from sys import intern
 import typing
 from dataclasses import dataclass
 import yaml
@@ -14,16 +15,22 @@ class BotConfig:
     api_id: int
     api_hash: str
 
-
 @dataclass
 class DatabaseConfig:
     login: str
+    password: str
 
+@dataclass
+class ContactsConfig:
+    common_chanel: str
+    admin_chanel: str
+    admin_chanel_id: int
 
 @dataclass
 class Config:
     bot: BotConfig = None
     db: DatabaseConfig = None
+    contacts: ContactsConfig = None
 
 
 def setup_config(bot: "Bot", config_path: str) -> None:
@@ -42,5 +49,11 @@ def setup_config(bot: "Bot", config_path: str) -> None:
         ),
         db=DatabaseConfig(
             login=raw_config["database"]["login"],
+            password=raw_config["database"]["password"],
+        ),
+        contacts=ContactsConfig(
+            common_chanel=raw_config["contacts"]["common_chanel"],
+            admin_chanel=raw_config["contacts"]["admin_chanel"],
+            admin_chanel_id=raw_config["contacts"]["admin_chanel_id"],
         ),
     )
