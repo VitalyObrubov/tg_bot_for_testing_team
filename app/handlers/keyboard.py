@@ -2,11 +2,14 @@ from typing import List
 from aiogram import types
 
 def make_usual_keyboard(keys: List[str], columns: int):
-    keyboard = types.ReplyKeyboardMarkup(row_width=columns, resize_keyboard=True)
-    tg_keys = []
-    for key in keys:
-        tg_keys.append(types.KeyboardButton(text=key))
-    keyboard.add(*tg_keys)
+    if len(keys) == 0:
+        keyboard=types.ReplyKeyboardRemove()
+    else:
+        keyboard = types.ReplyKeyboardMarkup(row_width=columns, resize_keyboard=True)
+        tg_keys = []
+        for key in keys:
+            tg_keys.append(types.KeyboardButton(text=key))
+        keyboard.add(*tg_keys)
     return keyboard
 
 

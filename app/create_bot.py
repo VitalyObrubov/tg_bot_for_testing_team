@@ -32,8 +32,7 @@ async def set_commands(bot: aioBot):
     # Регистрация команд, отображаемых в интерфейсе Telegram
     
     commands = [
-        BotCommand(command="/start", description="Начать работу"),
-        BotCommand(command="/cancel", description="Отменить текущее действие")
+        BotCommand(command="/cancel", description="Отменить все и вернуться к началу")
     ]
     await bot.set_my_commands(commands)
 

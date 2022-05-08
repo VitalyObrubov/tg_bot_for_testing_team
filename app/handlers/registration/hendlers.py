@@ -9,16 +9,23 @@ from app.handlers.registration.answers import *
 from app.handlers.registration.messages import *
 from app.handlers.registration.dataclassess import tgUser
 from app.handlers.keyboard import make_keyboard
-from app.utils import is_email
+from app.utils import is_email, is_mak
 
 
 class RegOrder(StatesGroup):
+    # Состояния по которым идет диалог
     start = State()
     waiting_for_approval = State()
     waiting_for_phone = State()
     waiting_for_fio = State()
     waiting_for_email = State()
     waiting_for_tv = State()
+    waiting_for_model = State()
+    waiting_for_mrf = State()
+    waiting_for_subscr = State()
+    waiting_for_mak = State()
+    waiting_for_fin = State()
+ 
 
 
 async def registration_stop(message: types.Message, state: FSMContext):
@@ -70,19 +77,79 @@ async def registration_fio(message: types.Message, state: FSMContext):
         await RegOrder.next()
 
 async def registration_email(message: types.Message, state: FSMContext):
+    email = is_email(message.text)
     if message.text == CANCEL[0]: # решили прервать регистрацию
         await registration_stop(message, state)
-    elif not(is_email(message.text)): # ввели неверный email
+    elif not(email): # ввели неверный email
         await message.answer(BAD_EMAIL)
         return 
     else: # ввели верный email
-        await state.update_data(email=message.text)
+        await state.update_data(email=email)
         keyboard = make_keyboard(YES_NO,"usual",2)
         await message.answer(ASK_TV, reply_markup=keyboard)
         await RegOrder.next()
 
 async def registration_tv(message: types.Message, state: FSMContext):
-    pass
+    if message.text == YES_NO[0]: # В этом поле хранится согласие
+        await state.update_data(have_tvbox=message.text)
+        keyboard = make_keyboard(TV_BOXES,"usual",5)
+        await message.answer(ASK_MODEL, reply_markup=keyboard)
+        await RegOrder.next()
+    elif message.text == YES_NO[1]: # В этом поле хранится отказ
+        await message.answer(ANSW_NOBOX)
+        await registration_stop(message, state)
+    else:
+        await message.answer(ASK_REENTER)
+
+async def registration_model(message: types.Message, state: FSMContext):
+    if message.text == TV_BOXES[-1]: # Выбрано другое
+        await message.answer(ANSW_BADMODEL)
+        await registration_stop(message, state)
+    elif message.text in TV_BOXES: # введеная модель есть в списке
+        await state.update_data(tvbox_model=message.text)
+        keyboard = make_keyboard(MRF,"usual",3)
+        await message.answer(ASK_MRF, reply_markup=keyboard)
+        await RegOrder.next()
+    else:
+        await message.answer(ASK_REENTER)
+
+async def registration_mrf(message: types.Message, state: FSMContext):
+    if message.text == MRF[-1]: # Выбрано другое
+        await registration_stop(message, state)
+    elif message.text in MRF: # введеная модель есть в списке
+        await state.update_data(mrf=message.text)
+        keyboard = make_keyboard(CANCEL,"usual",1)
+        await message.answer(ASK_SUBSCRIBER, reply_markup=keyboard)
+        await RegOrder.next()
+    else:
+        await message.answer(ASK_REENTER)
+
+async def registration_subscriber(message: types.Message, state: FSMContext):
+    if message.text == CANCEL[0]:
+        await registration_stop(message, state)
+    else:
+        await state.update_data(subscr_id=message.text)
+        keyboard = make_keyboard(CANCEL,"usual",1)
+        await message.answer(ASK_MAK, reply_markup=keyboard)
+        await RegOrder.next()
+
+async def registration_mak(message: types.Message, state: FSMContext):
+    if message.text == CANCEL[0]: # решили прервать регистрацию
+        await registration_stop(message, state)
+    elif not(is_mak(message.text)): # ввели неверный mak
+        await message.answer(BAD_MAK)
+        return 
+    else: # ввели верный mac
+        await state.update_data(mac=message.text)
+        keyboard = make_keyboard(OK,"usual",2)
+        await message.answer(FIN_MESS, reply_markup=keyboard)
+        await message.answer(FIN_MESS2, reply_markup=keyboard)
+        await RegOrder.next()
+
+async def registration_finish(message: types.Message, state: FSMContext):
+    from app.handlers.start_end import cmd_start
+    await cmd_start(message, state)
+
 
 def register_handlers_registration(dp: Dispatcher):
     dp.register_message_handler(registration_approval, state=RegOrder.waiting_for_approval)
@@ -90,3 +157,9 @@ def register_handlers_registration(dp: Dispatcher):
     dp.register_message_handler(registration_fio, state=RegOrder.waiting_for_fio)
     dp.register_message_handler(registration_email, state=RegOrder.waiting_for_email)
     dp.register_message_handler(registration_tv, state=RegOrder.waiting_for_tv)
+    dp.register_message_handler(registration_model, state=RegOrder.waiting_for_model)
+    dp.register_message_handler(registration_mrf, state=RegOrder.waiting_for_mrf)
+    dp.register_message_handler(registration_subscriber, state=RegOrder.waiting_for_subscr)
+    dp.register_message_handler(registration_mak, state=RegOrder.waiting_for_mak)
+    dp.register_message_handler(registration_finish, state=RegOrder.waiting_for_fin)
+    
