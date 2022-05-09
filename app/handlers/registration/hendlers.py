@@ -1,17 +1,31 @@
-from cgitb import text
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
 from typing import Union
 
-from app.globals import bot
+from app.globals import tgUser, User, bot
 from app.handlers.registration.answers import *
 from app.handlers.registration.messages import *
-from app.handlers.registration.dataclassess import tgUser
 from app.handlers.keyboard import make_keyboard
 from app.utils import is_email, is_mak
+from app.database.accessor import write_user_to_db
 
+
+
+"""
+Структура данных по окончании регистрации
+'tg_user': tgUser(), 
+'approval': 'Согласен', 
+'phone': '+79190385728', 
+'fio': 'freffere', 
+'email': 'erwr@jjji.err', 
+'have_tvbox': 'Да', 
+'tvbox_model': 'PS7105', 
+'mrf': 'MOS', 
+'san': '1234234', 
+'mak': '00:29:15:80:4E:4A'}
+"""
 
 
 class RegOrder(StatesGroup):
@@ -28,7 +42,6 @@ class RegOrder(StatesGroup):
     waiting_for_mak = State()
     waiting_for_fin = State()
  
-
 
 async def registration_stop(message: types.Message, state: FSMContext):
     await state.finish()
@@ -121,7 +134,7 @@ async def registration_mrf(message: types.Message, state: FSMContext):
     elif message.text in MRF: # введеная модель есть в списке
         await state.update_data(mrf=message.text)
         keyboard = make_keyboard(EMPTY,"usual",1)
-        await message.answer(ASK_SUBSCRIBER, reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
+        await message.answer(ASK_SAN, reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
         await RegOrder.next()
     else:
         await message.answer(ASK_REENTER)
@@ -130,7 +143,7 @@ async def registration_subscriber(message: types.Message, state: FSMContext):
     if message.text == CANCEL[0]:
         await registration_stop(message, state)
     else:
-        await state.update_data(subscr_id=message.text)
+        await state.update_data(san=message.text)
         keyboard = make_keyboard(EMPTY,"usual",1)
         await message.answer(ASK_MAK, reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
         await RegOrder.next()
@@ -142,15 +155,25 @@ async def registration_mak(message: types.Message, state: FSMContext):
         await message.answer(BAD_MAK)
         return 
     else: # ввели верный mac
-        await state.update_data(mac=message.text)
+        await state.update_data(mak=message.text)
+        # создаем пользователя и заносим его в базу и текущий список бота
+        user_data = await state.get_data()
+        user = User()
+        user.user_from_reg_data(user_data)
+        bot.max_id += 1
+        user.id = bot.max_id
+        user.row_num = write_user_to_db(user, bot) # заносим пользователя в базу
+        bot.users[user.tg_id] = user
+        # отправляем в чат админов сообщение о новом пользователе
+        await bot.aiobot.send_message(bot.config.contacts.admin_chanel_id, "Добавлен пользователь\n" + str(user), parse_mode=types.ParseMode.HTML)
+        # финальные сообщения
         keyboard = make_keyboard(OK,"usual",2)
-        await message.answer(FIN_MESS.format(123456), reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
+        await message.answer(FIN_MESS.format(user.id), reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
         await message.answer(FIN_MESS2.format(bot.config.contacts.common_chanel), reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
         await RegOrder.next()
 
 async def registration_finish(message: types.Message, state: FSMContext):
-    user_data = await state.get_data()
-    await bot.aiobot.send_message(bot.config.contacts.admin_chanel_id, str(user_data))
+
     from app.handlers.start_end import cmd_start
     await cmd_start(message, state)
 

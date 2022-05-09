@@ -7,6 +7,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from app.globals import Bot, bot
 from config.config_reader import setup_config
 from app.handlers.start_end import register_handlers_common
+from app.database.accessor import setup_db, load_users
 
 def setup_logging(bot: Bot) -> None:
     # Настройка логирования в stdout
@@ -35,6 +36,8 @@ async def setup_bot(config_path: str) -> Bot:
     setup_config(bot, config_path) 
     setup_logging(bot)
     setup_aiogram(bot)
+    setup_db(bot)
+    await load_users(bot)
     register_handlers_common(bot.dp)
     await set_commands(bot.aiobot)
     
