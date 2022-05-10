@@ -1,7 +1,5 @@
 import logging
-from typing import Optional
 from aiogram import Bot as aioBot, Dispatcher
-from aiogram.types import BotCommand
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 from app.globals import Bot, bot
@@ -20,16 +18,8 @@ def setup_logging(bot: Bot) -> None:
 
 
 def setup_aiogram(bot: Bot) -> None:
-    bot.aiobot = aioBot(token = bot.config.bot.token)
+    bot.aiobot = aioBot(token = bot.config.bot.token, parse_mode="HTML")
     bot.dp = Dispatcher(bot.aiobot, storage=MemoryStorage())
-
-async def set_commands(bot: aioBot):
-    # Регистрация команд, отображаемых в интерфейсе Telegram
-    
-    commands = [
-        BotCommand(command="/cancel", description="Отменить все и вернуться к началу")
-    ]
-    await bot.set_my_commands(commands)
 
 
 async def setup_bot(config_path: str) -> Bot:
@@ -39,6 +29,5 @@ async def setup_bot(config_path: str) -> Bot:
     setup_db(bot)
     await load_users(bot)
     register_handlers_common(bot.dp)
-    await set_commands(bot.aiobot)
     
     return bot

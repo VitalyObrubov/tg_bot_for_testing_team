@@ -38,8 +38,6 @@ class User:
     row_num: int
     tg_id: int
     tg_username: str
-    tg_fullname: str
-    tg_url: str
     id: int
     fullname: str
     phone: str
@@ -52,7 +50,6 @@ class User:
     def __str__(self):
         res = f"Телеграм ИД - {self.tg_id}\n"
         res += f"Телеграм имя - @{self.tg_username}\n"
-        res += f"Телеграм url - {self.tg_url}\n"
         res += f"ИД - <b>{self.id}</b>\n"
         res += f"ФИО - {self.fullname}\n"
         res += f"Телефон - {self.phone}\n"
@@ -64,20 +61,18 @@ class User:
         return res
 
     def user_from_g_table(self, data: List):
-        if len(data) < 12:
+        if len(data) < 10:
             return False
         self.tg_id = int(data[0])
         self.tg_username = data[1]
-        self.tg_fullname = data[2]
-        self.tg_url = data[3]
-        self.id = int(data[4])
-        self.fullname = data[5]
-        self.phone = data[6]
-        self.email = data[7]
-        self.stb_model = data[8]
-        self.mrf = data[9]
-        self.san = data[10]
-        self.mak = data[11]
+        self.id = int(data[2])
+        self.fullname = data[3]
+        self.phone = data[4]
+        self.email = data[5]
+        self.stb_model = data[6]
+        self.mrf = data[7]
+        self.san = data[8]
+        self.mak = data[9]
         return True
 
  
@@ -97,8 +92,6 @@ class User:
     def user_from_reg_data(self, data: Dict):
         self.tg_id = int(data["tg_user"].id)
         self.tg_username = data["tg_user"].username
-        self.tg_fullname = data["tg_user"].full_name
-        self.tg_url = data["tg_user"].url
         self.id = 0
         self.fullname = data["fio"]
         self.phone = data["phone"]

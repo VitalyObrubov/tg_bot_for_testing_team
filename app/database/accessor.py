@@ -36,9 +36,7 @@ def get_row_from_range(range: str) -> int:
 def write_user_to_db(user: User, bot: Bot) -> int:
     data_to_write = []
     data_to_write.append(user.tg_id)
-    data_to_write.append("@"+user.tg_username)
-    data_to_write.append(user.tg_fullname)
-    data_to_write.append(user.tg_url)
+    data_to_write.append(f'=HYPERLINK("https://t.me/{user.tg_username}"; "@{user.tg_username}")')
     data_to_write.append(user.id)
     data_to_write.append(user.fullname)
     data_to_write.append(user.phone)
@@ -47,7 +45,8 @@ def write_user_to_db(user: User, bot: Bot) -> int:
     data_to_write.append(user.mrf)
     data_to_write.append(user.san)
     data_to_write.append(user.mak)
-    res = bot.users_db.append_row(data_to_write)
-    return get_row_from_range(res['updates']['updatedRange'])
+    res = bot.users_db.append_row(data_to_write, value_input_option = "USER_ENTERED")
+    row_num = get_row_from_range(res['updates']['updatedRange'])
+    return row_num
 
 

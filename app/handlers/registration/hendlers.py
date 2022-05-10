@@ -88,7 +88,7 @@ async def registration_fio(message: types.Message, state: FSMContext):
     else:
         await state.update_data(fio=message.text)
         keyboard = make_keyboard(EMPTY,"usual",1)
-        await message.answer(ASK_EMAIL, reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
+        await message.answer(ASK_EMAIL, reply_markup=keyboard)
         await RegOrder.next()
 
 async def registration_email(message: types.Message, state: FSMContext):
@@ -123,7 +123,7 @@ async def registration_model(message: types.Message, state: FSMContext):
     elif message.text in TV_BOXES: # введеная модель есть в списке
         await state.update_data(tvbox_model=message.text)
         keyboard = make_keyboard(MRF,"usual",3)
-        await message.answer(ASK_MRF, reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
+        await message.answer(ASK_MRF, reply_markup=keyboard)
         await RegOrder.next()
     else:
         await message.answer(ASK_REENTER)
@@ -134,7 +134,7 @@ async def registration_mrf(message: types.Message, state: FSMContext):
     elif message.text in MRF: # введеная модель есть в списке
         await state.update_data(mrf=message.text)
         keyboard = make_keyboard(EMPTY,"usual",1)
-        await message.answer(ASK_SAN, reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
+        await message.answer(ASK_SAN, reply_markup=keyboard)
         await RegOrder.next()
     else:
         await message.answer(ASK_REENTER)
@@ -145,7 +145,7 @@ async def registration_subscriber(message: types.Message, state: FSMContext):
     else:
         await state.update_data(san=message.text)
         keyboard = make_keyboard(EMPTY,"usual",1)
-        await message.answer(ASK_MAK, reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
+        await message.answer(ASK_MAK, reply_markup=keyboard)
         await RegOrder.next()
 
 async def registration_mak(message: types.Message, state: FSMContext):
@@ -165,11 +165,11 @@ async def registration_mak(message: types.Message, state: FSMContext):
         user.row_num = write_user_to_db(user, bot) # заносим пользователя в базу
         bot.users[user.tg_id] = user
         # отправляем в чат админов сообщение о новом пользователе
-        await bot.aiobot.send_message(bot.config.contacts.admin_chanel_id, "Добавлен пользователь\n" + str(user), parse_mode=types.ParseMode.HTML)
+        await bot.aiobot.send_message(bot.config.contacts.admin_chanel_id, "Добавлен пользователь\n" + str(user))
         # финальные сообщения
         keyboard = make_keyboard(OK,"usual",2)
-        await message.answer(FIN_MESS.format(user.id), reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
-        await message.answer(FIN_MESS2.format(bot.config.contacts.common_chanel), reply_markup=keyboard, parse_mode=types.ParseMode.HTML)
+        await message.answer(FIN_MESS.format(user.id), reply_markup=keyboard)
+        await message.answer(FIN_MESS2.format(bot.config.contacts.common_chanel), reply_markup=keyboard)
         await RegOrder.next()
 
 async def registration_finish(message: types.Message, state: FSMContext):
