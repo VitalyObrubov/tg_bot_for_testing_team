@@ -9,8 +9,6 @@ from app.handlers.registration.answers import *
 from app.handlers.registration.messages import *
 from app.handlers.keyboard import make_keyboard
 from app.utils import is_email, is_mak
-from app.database.accessor import write_user_to_db
-
 
 
 """
@@ -40,13 +38,11 @@ class RegOrder(StatesGroup):
     waiting_for_mrf = State()
     waiting_for_subscr = State()
     waiting_for_mak = State()
-    waiting_for_fin = State()
+
  
 
 async def registration_stop(message: types.Message, state: FSMContext):
-    await state.finish()
-    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add("/start")
+    keyboard = make_keyboard(START,"usual",1)
     await message.answer(REGISTRATION_CANCELED, reply_markup=keyboard)
 
 async def registration_start(message: types.Message, state: FSMContext, tg_user: tgUser):
@@ -57,14 +53,14 @@ async def registration_start(message: types.Message, state: FSMContext, tg_user:
     await RegOrder.next()
 
 async def registration_approval(message: types.Message, state: FSMContext):
-    if message.text == APPROVAL_ANSWERS[0]: # В этом поле хранится согласие
+    if message.text == APPROVAL_ANSWERS["yes"]: # В этом поле хранится согласие
         await state.update_data(approval=message.text)
         keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
         keyboard.add(types.KeyboardButton(text="Отправить телефонный номер", request_contact=True))
-        keyboard.add(types.KeyboardButton(text=CANCEL[0]))
+        keyboard.add(types.KeyboardButton(text=CANCEL["cancel"]))
         await message.answer(ASK_PHONE, reply_markup=keyboard)
         await RegOrder.next()
-    elif message.text == APPROVAL_ANSWERS[1]: # В этом поле хранится отказ
+    elif message.text == APPROVAL_ANSWERS["no"]: # В этом поле хранится отказ
         await registration_stop(message, state)
     else:
         await message.answer(ASK_REENTER)
@@ -76,14 +72,14 @@ async def registration_phone(message: Union[types.Message, types.Contact], state
         keyboard = make_keyboard(EMPTY,"usual",1)
         await message.answer(ASK_FIO, reply_markup=keyboard)
         await RegOrder.next()
-    elif message.text == CANCEL[0]: # Отказались отправить телефон
+    elif message.text == CANCEL["cancel"]: # Отказались отправить телефон
         await registration_stop(message, state)
     else:
         await message.answer(ASK_REENTER)
         return
 
 async def registration_fio(message: types.Message, state: FSMContext):
-    if message.text == CANCEL[0]:
+    if message.text == CANCEL["cancel"]:
         await registration_stop(message, state)
     else:
         await state.update_data(fio=message.text)
@@ -93,7 +89,7 @@ async def registration_fio(message: types.Message, state: FSMContext):
 
 async def registration_email(message: types.Message, state: FSMContext):
     email = is_email(message.text)
-    if message.text == CANCEL[0]: # решили прервать регистрацию
+    if message.text == CANCEL["cancel"]: # решили прервать регистрацию
         await registration_stop(message, state)
     elif not(email): # ввели неверный email
         await message.answer(BAD_EMAIL)
@@ -105,22 +101,22 @@ async def registration_email(message: types.Message, state: FSMContext):
         await RegOrder.next()
 
 async def registration_tv(message: types.Message, state: FSMContext):
-    if message.text == YES_NO[0]: # В этом поле хранится согласие
+    if message.text == YES_NO["yes"]: # В этом поле хранится согласие
         await state.update_data(have_tvbox=message.text)
         keyboard = make_keyboard(TV_BOXES,"usual",5)
         await message.answer(ASK_MODEL, reply_markup=keyboard)
         await RegOrder.next()
-    elif message.text == YES_NO[1]: # В этом поле хранится отказ
+    elif message.text == YES_NO["no"]: # В этом поле хранится отказ
         await message.answer(ANSW_NOBOX)
         await registration_stop(message, state)
     else:
         await message.answer(ASK_REENTER)
 
 async def registration_model(message: types.Message, state: FSMContext):
-    if message.text == TV_BOXES[-1]: # Выбрано другое
+    if message.text == TV_BOXES["other"]: # Выбрано другое
         await message.answer(ANSW_BADMODEL)
         await registration_stop(message, state)
-    elif message.text in TV_BOXES: # введеная модель есть в списке
+    elif message.text in list(TV_BOXES.values()): # введеная модель есть в списке
         await state.update_data(tvbox_model=message.text)
         keyboard = make_keyboard(MRF,"usual",3)
         await message.answer(ASK_MRF, reply_markup=keyboard)
@@ -129,9 +125,9 @@ async def registration_model(message: types.Message, state: FSMContext):
         await message.answer(ASK_REENTER)
 
 async def registration_mrf(message: types.Message, state: FSMContext):
-    if message.text == MRF[-1]: # Выбрано другое
+    if message.text == MRF["cancel"]: 
         await registration_stop(message, state)
-    elif message.text in MRF: # введеная модель есть в списке
+    elif message.text in  list(MRF.values()): # введеная модель есть в списке
         await state.update_data(mrf=message.text)
         keyboard = make_keyboard(EMPTY,"usual",1)
         await message.answer(ASK_SAN, reply_markup=keyboard)
@@ -140,7 +136,7 @@ async def registration_mrf(message: types.Message, state: FSMContext):
         await message.answer(ASK_REENTER)
 
 async def registration_subscriber(message: types.Message, state: FSMContext):
-    if message.text == CANCEL[0]:
+    if message.text == CANCEL["cancel"]:
         await registration_stop(message, state)
     else:
         await state.update_data(san=message.text)
@@ -149,7 +145,7 @@ async def registration_subscriber(message: types.Message, state: FSMContext):
         await RegOrder.next()
 
 async def registration_mak(message: types.Message, state: FSMContext):
-    if message.text == CANCEL[0]: # решили прервать регистрацию
+    if message.text == CANCEL["cancel"]: # решили прервать регистрацию
         await registration_stop(message, state)
     elif not(is_mak(message.text)): # ввели неверный mak
         await message.answer(BAD_MAK)
@@ -162,20 +158,16 @@ async def registration_mak(message: types.Message, state: FSMContext):
         user.user_from_reg_data(user_data)
         bot.max_id += 1
         user.id = bot.max_id
-        user.row_num = write_user_to_db(user, bot) # заносим пользователя в базу
+        user.row_num = await bot.database.write_user_to_db(user, bot) # заносим пользователя в базу
         bot.users[user.tg_id] = user
         # отправляем в чат админов сообщение о новом пользователе
         await bot.aiobot.send_message(bot.config.contacts.admin_chanel_id, "Добавлен пользователь\n" + str(user))
         # финальные сообщения
-        keyboard = make_keyboard(OK,"usual",2)
+        keyboard = make_keyboard(START,"usual",1)
         await message.answer(FIN_MESS.format(user.id), reply_markup=keyboard)
         await message.answer(FIN_MESS2.format(bot.config.contacts.common_chanel), reply_markup=keyboard)
-        await RegOrder.next()
+        await state.finish()
 
-async def registration_finish(message: types.Message, state: FSMContext):
-
-    from app.handlers.start_end import cmd_start
-    await cmd_start(message, state)
 
 
 def register_handlers_registration(dp: Dispatcher):
@@ -188,5 +180,5 @@ def register_handlers_registration(dp: Dispatcher):
     dp.register_message_handler(registration_mrf, state=RegOrder.waiting_for_mrf)
     dp.register_message_handler(registration_subscriber, state=RegOrder.waiting_for_subscr)
     dp.register_message_handler(registration_mak, state=RegOrder.waiting_for_mak)
-    dp.register_message_handler(registration_finish, state=RegOrder.waiting_for_fin)
+
     

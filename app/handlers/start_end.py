@@ -8,6 +8,7 @@ from app.globals import bot
 
 from app.handlers.registration.messages import USERNAME_NEEDED
 from app.handlers.registration.hendlers import register_handlers_registration, registration_start
+from app.handlers.main.h_main import register_handlers_main, main_start
 
 def new_user(tg_user: tgUser) -> Boolean:
     user = bot.users.get(tg_user.id)
@@ -26,9 +27,7 @@ async def cmd_start(message: types.Message, state: FSMContext):
         else:
             await registration_start(message, state, tg_user)
     else:
-        keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        keyboard.add("/start")
-        await message.answer("Поздравляю вы зарегистрированный пользователь", reply_markup=keyboard)
+        await main_start(message, state)
 
 
 async def cmd_cancel(message: types.Message, state: FSMContext):
@@ -54,6 +53,7 @@ def register_handlers_common(dp: Dispatcher):
     dp.register_message_handler(cmd_reload_users, commands="reload_users", state="*", chat_type=types.ChatType.PRIVATE)
 
     register_handlers_registration(dp)
+    register_handlers_main(dp)
     
     # Этот обработчик обязательно должен быть последним
     dp.register_message_handler(any_text_message, chat_type=types.ChatType.PRIVATE)

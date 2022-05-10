@@ -1,19 +1,22 @@
 import logging
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Any
 from aiogram import Bot as aioBot, Dispatcher
-from config.config_reader import Config
 from dataclasses import dataclass
 from aiogram.types.user import User as aioUser
-from gspread.worksheet import Worksheet 
+
+from config.config_reader import Config
+#from app.database.accessor import GoogleDatabase
+
 
 class Bot():
     config: Optional[Config] = None
     aiobot: Optional[aioBot] = None # непосредственно сам бот aiogram 
     dp: Optional[Dispatcher] = None # его диспетчер
     logger: Optional[logging.Logger] = None  # логгер
-    users_db: Optional[Worksheet] = None # лист Goole таблицы с пользователями
+    database: Any = None # менеджер доступа к аккаунту google
     users: Dict[int, "User"] = {} # пользователи
     max_id:int = 0
+
 
 #//////////////////////////////////////
 
@@ -49,7 +52,7 @@ class User:
 
     def __str__(self):
         res = f"Телеграм ИД - {self.tg_id}\n"
-        res += f"Телеграм имя - @{self.tg_username}\n"
+        res += f"Телеграм имя - {self.tg_username}\n"
         res += f"ИД - <b>{self.id}</b>\n"
         res += f"ФИО - {self.fullname}\n"
         res += f"Телефон - {self.phone}\n"
@@ -57,6 +60,13 @@ class User:
         res += f"Модель приставки - {self.stb_model}\n"
         res += f"MRF - {self.mrf}\n"
         res += f"SAN - {self.san}\n"
+        res += f"MAK - {self.mak}\n"
+        return res
+
+    def main_info(self):
+        res = f"ИД - <b>{self.id}</b>\n"
+        res += f"{self.tg_username}\n"
+        res += f"MRF - {self.mrf}\n"
         res += f"MAK - {self.mak}\n"
         return res
 
@@ -91,7 +101,7 @@ class User:
     """
     def user_from_reg_data(self, data: Dict):
         self.tg_id = int(data["tg_user"].id)
-        self.tg_username = data["tg_user"].username
+        self.tg_username = "@"+data["tg_user"].username
         self.id = 0
         self.fullname = data["fio"]
         self.phone = data["phone"]
