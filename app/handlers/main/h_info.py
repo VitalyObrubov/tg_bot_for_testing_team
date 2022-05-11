@@ -50,7 +50,12 @@ async def handle_user_info(message: types.Message, state: FSMContext):
 
 async def handle_change_user_info(message: types.Message, state: FSMContext):
     user = bot.users.get(message.from_user.id)
-    mess_id = await bot.database.write_user_change_request(user, bot, message.text) # заносим сообщение в базу
+    mess = {}
+    mess["request_type"] = "change_user_data"    
+    mess["text"] = message.text
+    mess["file_links"] = ""
+
+    mess_id = await bot.database.write_user_request(user, bot, mess) # заносим сообщение в базу
 
     # отправляем в чат админов сообщение о новом пользователе
     await bot.aiobot.send_message(bot.config.contacts.admin_chanel_id, 

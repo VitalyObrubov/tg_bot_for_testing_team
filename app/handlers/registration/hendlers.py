@@ -1,7 +1,6 @@
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.dispatcher.filters import Text
 from typing import Union
 
 from app.globals import tgUser, User, bot
@@ -42,11 +41,17 @@ class RegOrder(StatesGroup):
  
 
 async def registration_stop(message: types.Message, state: FSMContext):
+    await state.finish()
     keyboard = make_keyboard(START,"usual",1)
     await message.answer(REGISTRATION_CANCELED, reply_markup=keyboard)
 
 async def registration_start(message: types.Message, state: FSMContext, tg_user: tgUser):
     await RegOrder.start.set()
+    tg_user = tgUser(message.from_user)
+    # Если пользователь новый проверяем есть ли у него в Телеграмм имя пользователя
+    if tg_user.username == None:
+        await message.answer(USERNAME_NEEDED)
+
     await state.update_data(tg_user=tg_user)
     keyboard = make_keyboard(APPROVAL_ANSWERS,"usual",2)
     await message.answer(WELCOME, reply_markup=keyboard)
@@ -156,8 +161,6 @@ async def registration_mak(message: types.Message, state: FSMContext):
         user_data = await state.get_data()
         user = User()
         user.user_from_reg_data(user_data)
-        bot.max_id += 1
-        user.id = bot.max_id
         user.row_num = await bot.database.write_user_to_db(user, bot) # заносим пользователя в базу
         bot.users[user.tg_id] = user
         # отправляем в чат админов сообщение о новом пользователе

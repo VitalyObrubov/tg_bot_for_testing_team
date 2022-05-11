@@ -15,7 +15,7 @@ class Bot():
     logger: Optional[logging.Logger] = None  # логгер
     database: Any = None # менеджер доступа к аккаунту google
     users: Dict[int, "User"] = {} # пользователи
-    max_id:int = 0
+
 
 
 #//////////////////////////////////////
@@ -101,7 +101,7 @@ class User:
     """
     def user_from_reg_data(self, data: Dict):
         self.tg_id = int(data["tg_user"].id)
-        self.tg_username = "@"+data["tg_user"].username
+        self.tg_username = f"@{data['tg_user'].username}"
         self.id = 0
         self.fullname = data["fio"]
         self.phone = data["phone"]
