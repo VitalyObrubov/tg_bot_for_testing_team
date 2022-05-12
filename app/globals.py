@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from aiogram.types.user import User as aioUser
 
 from config.config_reader import Config
-#from app.database.accessor import GoogleDatabase
 
 
 class Bot():
@@ -14,6 +13,7 @@ class Bot():
     dp: Optional[Dispatcher] = None # его диспетчер
     logger: Optional[logging.Logger] = None  # логгер
     database: Any = None # менеджер доступа к аккаунту google
+    g_drive: Any = None # менеджер доступа к диску google
     users: Dict[int, "User"] = {} # пользователи
 
 

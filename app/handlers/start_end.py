@@ -30,7 +30,7 @@ async def any_text_message(message: types.Message, state: FSMContext):
     await cmd_start(message, state)
 
 async def cmd_reload_users(message: types.Message):
-    from app.database.accessor import load_users
+    from app.database.g_spread_accessor import load_users
     if message.from_user.id == bot.config.bot.admin_id:
         await load_users(bot)
         await message.answer("Пользователи перезагружены")

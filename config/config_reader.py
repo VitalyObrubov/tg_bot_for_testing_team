@@ -22,6 +22,7 @@ class DatabaseConfig:
     password: str
     table_id: str
     cred_file: str
+    g_drive_media_folder: str
 
 @dataclass
 class ContactsConfig:
@@ -55,6 +56,7 @@ def setup_config(bot: "Bot", config_path: str) -> None:
             password=raw_config["database"]["password"],
             table_id=raw_config["database"]["table_id"],
             cred_file=raw_config["database"]["cred_file"],
+            g_drive_media_folder=raw_config["database"]["g_drive_media_folder"],
         ),
         contacts=ContactsConfig(
             common_chanel=raw_config["contacts"]["common_chanel"],

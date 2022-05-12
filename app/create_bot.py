@@ -5,7 +5,8 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from app.globals import Bot, bot
 from config.config_reader import setup_config
 from app.handlers.start_end import register_handlers_common
-from app.database.accessor import GoogleDatabase
+from app.database.g_spread_accessor import GoogleDatabase
+from app.database.g_drive_accessor import GoogleDrive
 
 def setup_logging(bot: Bot) -> None:
     # Настройка логирования в stdout
@@ -23,6 +24,8 @@ def setup_aiogram(bot: Bot) -> None:
 
 def setup_db(bot: Bot) -> None:
     bot.database = GoogleDatabase(bot)
+    bot.g_drive = GoogleDrive(bot)
+
 
 async def setup_bot(config_path: str) -> Bot:
     setup_config(bot, config_path) 
