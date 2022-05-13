@@ -1,13 +1,12 @@
-bot:
+bot:  
+  admin_id: 101
   name: t_bot
   username: t_bot
   token: 4666879:Asdfgdfgs6574sdfg6+75sdfg5
-  api_id: 1111111
-  api_hash: adsas34534rer34534wer
-  admin: 1012736210
 database:
-  login: qqqqqqqq@gmail.com
-  password: kkjhkg
+  cred_file: gsheetscred.json
+  table_id: cYbPQrmmVQ9QjhaNUJcALQ
+  g_drive_media_folder: c8oIPLZnbj_0vKX7o
 contacts:
   common_chanel: hghjfgh
   admin_chanel: fgjghfg

@@ -12,14 +12,10 @@ class BotConfig:
     name: str
     username: str
     token: str
-    api_id: int
-    api_hash: str
     admin_id: int
 
 @dataclass
 class DatabaseConfig:
-    login: str
-    password: str
     table_id: str
     cred_file: str
     g_drive_media_folder: str
@@ -47,13 +43,9 @@ def setup_config(bot: "Bot", config_path: str) -> None:
             name=raw_config["bot"]["name"],
             username=raw_config["bot"]["username"],
             token=raw_config["bot"]["token"],
-            api_id=raw_config["bot"]["api_id"],
-            api_hash=raw_config["bot"]["api_hash"], 
             admin_id=raw_config["bot"]["admin_id"],            
         ),
         db=DatabaseConfig(
-            login=raw_config["database"]["login"],
-            password=raw_config["database"]["password"],
             table_id=raw_config["database"]["table_id"],
             cred_file=raw_config["database"]["cred_file"],
             g_drive_media_folder=raw_config["database"]["g_drive_media_folder"],

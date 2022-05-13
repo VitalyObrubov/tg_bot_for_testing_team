@@ -1,19 +1,22 @@
 import logging
-from typing import Optional, Dict, List, Any
+from typing import Optional, Dict, List, Any, TYPE_CHECKING
 from aiogram import Bot as aioBot, Dispatcher
 from dataclasses import dataclass
 from aiogram.types.user import User as aioUser
 
 from config.config_reader import Config
-
+if TYPE_CHECKING:
+    from app.database.g_spread_accessor import GoogleDatabase
+    from app.database.g_drive_accessor import GoogleDrive
 
 class Bot():
+
     config: Optional[Config] = None
     aiobot: Optional[aioBot] = None # непосредственно сам бот aiogram 
     dp: Optional[Dispatcher] = None # его диспетчер
     logger: Optional[logging.Logger] = None  # логгер
-    database: Any = None # менеджер доступа к аккаунту google
-    g_drive: Any = None # менеджер доступа к диску google
+    database: Optional["GoogleDatabase"] = None # менеджер доступа к проекту google
+    g_drive: Optional["GoogleDrive"] = None # менеджер доступа к диску google
     users: Dict[int, "User"] = {} # пользователи
 
 

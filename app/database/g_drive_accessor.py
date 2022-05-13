@@ -1,10 +1,9 @@
 import os
+import asyncio
 from google.oauth2 import service_account
 from googleapiclient.http import MediaIoBaseDownload,MediaFileUpload
 from googleapiclient.discovery import Resource, build
-
 from app.globals import User, Bot, bot
-
 
 class GoogleDrive:
     service: Resource
@@ -16,7 +15,10 @@ class GoogleDrive:
                 SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     
     def init(self):
-        self.service = build('drive', 'v3', credentials = self.credentials) 
+        self.service = build('drive', 'v3', credentials = self.credentials)
+
+    async def upload_file_to_g_dive(self, file_metadata, media):
+        self.service.files().create(body=file_metadata, media_body=media).execute() 
 
     async def upload_to_g_dive(self, path: str, request_type: str):
         self.init()
@@ -43,7 +45,7 @@ class GoogleDrive:
         # Создаем папку сообщения
         name = request_type
         file_metadata = {
-            'name': "NewMessaage",  # потом переименуем по ид сообщения
+            'name': "NewMessage",  # потом переименуем по ид сообщения
             'mimeType': 'application/vnd.google-apps.folder',
             'parents': [request_folder_id]
         }
@@ -53,12 +55,10 @@ class GoogleDrive:
         # грузим файлы на Google Drive
         files = os.listdir(path)
         for file in files:
-            file_metadata = {
-                            'name': file,
-                            'parents': [mess_folder_id]
-                        }
+            file_metadata = {'name': file, 'parents': [mess_folder_id]}
             media = MediaFileUpload(os.path.join(path, file), resumable=True)
-            self.service.files().create(body=file_metadata, media_body=media, fields='id').execute()                
+            upload_task = asyncio.create_task(self.upload_file_to_g_dive(file_metadata, media)) 
+            await upload_task       
         return mess_folder_id
 
     def change_folder_name(self, dir_id: str, name: str):
@@ -66,7 +66,9 @@ class GoogleDrive:
         self.service.files().update(fileId=dir_id, body=body).execute()
 
 
-    async def upload_files(self, user: User, files: dict, request_type: str) -> list: # возвращает список ссылок на файлы
+    async def upload_files(self, user: User, files: dict, request_type: str) -> str: 
+        # возвращает ид папки на Гугл диске куда сложены файлы
+        # скачивает файлы с Телеграма затем вызывает метод их закачки на Гугл диск 
         path = os.path.join('media',str(user.id))
         if not os.path.exists(path):
             os.mkdir(path)
@@ -80,11 +82,11 @@ class GoogleDrive:
             dest_file = os.path.join(path, filename)
             await bot.aiobot.download_file(file_path, dest_file)
 
-
         dir_id = await self.upload_to_g_dive(path, request_type)
         # del files
         files = os.listdir(path)
         for file in files:
             os.remove(os.path.join(path, file))
+        os.rmdir(path)    
 
         return dir_id

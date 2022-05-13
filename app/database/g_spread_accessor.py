@@ -5,7 +5,6 @@ from google.oauth2.service_account import Credentials
 
 from app.globals import Bot, User
 
-
 class GoogleDatabase:
     manager: AsyncioGspreadClientManager
    
