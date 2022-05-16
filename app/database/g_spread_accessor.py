@@ -51,6 +51,9 @@ class GoogleDatabase:
     def get_range_hyperlink(self, bot: Bot, sheet: AsyncioGspreadWorksheet, range: str) -> int:
         return f"https://docs.google.com/spreadsheets/d/{bot.config.db.table_id}/edit#gid={sheet.id}&range={range}:{range}"
         
+    def get_row_from_range(self, range: str) -> int:
+        return int(re.findall(r'^\D*(\d+)', range)[0])
+
     async def write_user_to_db(self, user: User, bot: Bot) -> int:
         sheets = await self.get_g_sheets(bot, ["users"])   
         users_db = sheets["users"]        
