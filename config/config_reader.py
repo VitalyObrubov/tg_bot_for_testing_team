@@ -13,6 +13,8 @@ class BotConfig:
     username: str
     token: str
     admin_id: int
+    api_id: int
+    api_hash: str
 
 @dataclass
 class DatabaseConfig:
@@ -43,7 +45,9 @@ def setup_config(bot: "Bot", config_path: str) -> None:
             name=raw_config["bot"]["name"],
             username=raw_config["bot"]["username"],
             token=raw_config["bot"]["token"],
-            admin_id=raw_config["bot"]["admin_id"],            
+            admin_id=raw_config["bot"]["admin_id"],  
+            api_id=raw_config["bot"]["api_id"],  
+            api_hash=raw_config["bot"]["api_hash"],                      
         ),
         db=DatabaseConfig(
             table_id=raw_config["database"]["table_id"],

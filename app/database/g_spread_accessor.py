@@ -1,5 +1,4 @@
 import re
-from time import sleep
 from gspread_asyncio import AsyncioGspreadWorksheet, AsyncioGspreadClientManager
 from google.oauth2.service_account import Credentials 
 
@@ -55,7 +54,7 @@ class GoogleDatabase:
     async def write_user_to_db(self, user: User, bot: Bot) -> int:
         sheets = await self.get_g_sheets(bot, ["users"])   
         users_db = sheets["users"]        
-        user.id = self.get_new_id(users_db)
+        user.id = await self.get_new_id(users_db)
         data_to_write = []
         data_to_write.append(user.tg_id)
         data_to_write.append(f'=HYPERLINK("https://t.me/{user.tg_username}"; "{user.tg_username}")')
