@@ -2,7 +2,7 @@ from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
-from app.globals import User, bot
+from app.globals import bot
 from app.handlers.main.answers import *
 from app.handlers.main.messages import *
 from app.handlers.main.h_info import InfoOrder, register_handlers_info, info_start
@@ -60,10 +60,11 @@ async def handle_input_info(message: types.Message, state: FSMContext):
     if message.text in [SEND_PROBLEM["send"],SEND_IDEA["send"],SEND_QUESTION["send"]]:
         await message.answer(MESSAGE_SENDING)
         user_data = await state.get_data()
+        dir_link = "Файлы отсутствуют"
         dir_id = None
         if len(user_data["files"]):
             dir_id = await bot.g_drive.upload_files(user, user_data["files"],user_data["request_type"])
-        dir_link = "https://drive.google.com/drive/folders/" + dir_id
+            dir_link = "https://drive.google.com/drive/folders/" + dir_id
         mess = {}
         mess["file_links"] = dir_link
         mess["text"] = ", ".join(user_data["mess_text"])
@@ -126,5 +127,6 @@ def register_handlers_main(dp: Dispatcher):
     dp.register_message_handler(handle_input_info, state=MainOrder.waiting_for_input_info,content_types=types.ContentType.ANY)
 
     register_handlers_info(dp)
+
 
     

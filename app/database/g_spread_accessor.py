@@ -1,6 +1,9 @@
 import re
 from gspread_asyncio import AsyncioGspreadWorksheet, AsyncioGspreadClientManager
 from google.oauth2.service_account import Credentials 
+from datetime import datetime
+import pytz
+
 
 from app.globals import Bot, User
 
@@ -57,7 +60,7 @@ class GoogleDatabase:
     async def write_user_to_db(self, user: User, bot: Bot) -> int:
         sheets = await self.get_g_sheets(bot, ["users"])   
         users_db = sheets["users"]        
-        user.id = await self.get_new_id(users_db)
+        user.id = await self.get_new_id(users_db, 3)
         data_to_write = []
         data_to_write.append(user.tg_id)
         data_to_write.append(f'=HYPERLINK("https://t.me/{user.tg_username}"; "{user.tg_username}")')
@@ -85,15 +88,19 @@ class GoogleDatabase:
         return new_id
 
     async def write_user_request(self, user: User, bot: Bot, mess: dict) -> int:
+        tz_MSK = pytz.timezone('Europe/Moscow')
         data_to_write = []
         sheets = await self.get_g_sheets(bot, [mess["request_type"],"users"])
         requests_db = sheets[mess["request_type"]]
-        mess_id = await self.get_new_id(requests_db)
+        mess_id = await self.get_new_id(requests_db,2)
         users_db = sheets["users"]
         userlink = self.get_range_hyperlink(bot,users_db, user.row_num)
+        data_to_write.append(datetime.now(tz_MSK).strftime(("%m.%d.%Y %H:%M")))
         data_to_write.append(mess_id)
         data_to_write.append(f'=HYPERLINK("{userlink}"; "{user.id}")')
         data_to_write.append(f'=HYPERLINK("https://t.me/{user.tg_username}"; "{user.tg_username}")')
+        data_to_write.append(user.mrf)
+        data_to_write.append(user.mak)
         data_to_write.append(mess["text"])
         data_to_write.append(mess["file_links"])
         await requests_db.append_row(data_to_write, value_input_option = "USER_ENTERED")

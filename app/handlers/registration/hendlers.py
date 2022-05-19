@@ -47,10 +47,6 @@ async def registration_stop(message: types.Message, state: FSMContext):
 
 async def registration_start(message: types.Message, state: FSMContext, tg_user: tgUser):
     await RegOrder.start.set()
-    tg_user = tgUser(message.from_user)
-    # Если пользователь новый проверяем есть ли у него в Телеграмм имя пользователя
-    if tg_user.username == None:
-        await message.answer(USERNAME_NEEDED)
 
     await state.update_data(tg_user=tg_user)
     keyboard = make_keyboard(APPROVAL_ANSWERS,"usual",2)
@@ -73,6 +69,10 @@ async def registration_approval(message: types.Message, state: FSMContext):
 
 async def registration_phone(message: Union[types.Message, types.Contact], state: FSMContext):
     if message.contact != None: # Был прислан контакт
+        tg_user = tgUser(message.from_user)
+        # Если пользователь новый проверяем есть ли у него в Телеграмм имя пользователя
+        if tg_user.username == None:
+            await message.answer(USERNAME_NEEDED)
         await state.update_data(phone=message.contact.phone_number)
         keyboard = make_keyboard(EMPTY,"usual",1)
         await message.answer(ASK_FIO, reply_markup=keyboard)
@@ -108,7 +108,7 @@ async def registration_email(message: types.Message, state: FSMContext):
 async def registration_tv(message: types.Message, state: FSMContext):
     if message.text == YES_NO["yes"]: # В этом поле хранится согласие
         await state.update_data(have_tvbox=message.text)
-        keyboard = make_keyboard(TV_BOXES,"usual",5)
+        keyboard = make_keyboard(TV_BOXES_1,"usual",3)
         await message.answer(ASK_MODEL, reply_markup=keyboard)
         await RegOrder.next()
     elif message.text == YES_NO["no"]: # В этом поле хранится отказ
@@ -118,10 +118,16 @@ async def registration_tv(message: types.Message, state: FSMContext):
         await message.answer(ASK_REENTER)
 
 async def registration_model(message: types.Message, state: FSMContext):
-    if message.text == TV_BOXES["other"]: # Выбрано другое
+    if message.text == TV_BOXES_2["other"]: # Выбрано другое
         await message.answer(ANSW_BADMODEL)
         await registration_stop(message, state)
-    elif message.text in list(TV_BOXES.values()): # введеная модель есть в списке
+    elif message.text == TV_BOXES_1["more"]:
+        keyboard = make_keyboard(TV_BOXES_2,"usual",3)
+        await message.answer(ASK_MODEL, reply_markup=keyboard)
+    elif message.text == TV_BOXES_2["back"]:
+        keyboard = make_keyboard(TV_BOXES_1,"usual",3)
+        await message.answer(ASK_MODEL, reply_markup=keyboard)
+    elif message.text in (list(TV_BOXES_1.values())+list(TV_BOXES_2.values())): # введеная модель есть в списке
         await state.update_data(tvbox_model=message.text)
         keyboard = make_keyboard(MRF,"usual",3)
         await message.answer(ASK_MRF, reply_markup=keyboard)
@@ -143,6 +149,8 @@ async def registration_mrf(message: types.Message, state: FSMContext):
 async def registration_subscriber(message: types.Message, state: FSMContext):
     if message.text == CANCEL["cancel"]:
         await registration_stop(message, state)
+    elif not message.text.isdigit():
+        await message.answer(BAD_SAN)
     else:
         await state.update_data(san=message.text)
         keyboard = make_keyboard(EMPTY,"usual",1)
@@ -150,13 +158,14 @@ async def registration_subscriber(message: types.Message, state: FSMContext):
         await RegOrder.next()
 
 async def registration_mak(message: types.Message, state: FSMContext):
+    mak = is_mak(message.text)
     if message.text == CANCEL["cancel"]: # решили прервать регистрацию
         await registration_stop(message, state)
-    elif not(is_mak(message.text)): # ввели неверный mak
+    elif not(mak): # ввели неверный mak
         await message.answer(BAD_MAK)
         return 
     else: # ввели верный mac
-        await state.update_data(mak=message.text)
+        await state.update_data(mak=mak)
         # создаем пользователя и заносим его в базу и текущий список бота
         user_data = await state.get_data()
         user = User()
