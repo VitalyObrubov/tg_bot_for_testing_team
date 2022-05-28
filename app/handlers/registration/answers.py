@@ -5,27 +5,27 @@ START = {"start":"/start"}
 APPROVAL_ANSWERS = {"yes":"Согласен", "no":"Не согласен"} 
 YES_NO = {"yes":"Да", "no":"Нет"}
 TV_BOXES_1 = {
-            1:"SML-5050",
-            2:"SML-482",
-            3:"SML-292",
-            4:"SML-282",
-            5:"Switron-1500",
-            6:"B700V7L",
-            7:"PS7105",
-            8:"Z123",
-            9:"IP_STB_HD",
+            1:"SWITRON-IPTV-1500",
+            2:"SML-5050",
+            3:"SML-482",
+            4:"B700V7L",
+            5:"IPDC603",
+            6:"PS7105",
+            7:"Z123",
+            8:"B866V2",
+            9:"STB122A",
             "more":"Еще..."
             }
 
 TV_BOXES_2 = {
 
-            10:"Mag250",
-            11:"Yuxing-YX6916A",
-            12:"Motorola_VIP1963",
-            13:"Motorola_VIP1003",
-            14:"Qbox",
-            15:"STB122A",
-            16:"B866V2",
+            10:"IP_STB_HD",
+            11:"mag250",
+            12:"SML-282",
+            13:"Yuxing-YX6916A",
+            14:"Motorola_VIP1003",
+            15:"Motorola_VIP1963",
+            16:"SML-292",
             17:"IP6003",
             18:"",
             "back":"Назад...",
