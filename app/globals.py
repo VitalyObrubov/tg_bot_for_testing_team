@@ -54,23 +54,24 @@ class User:
     mak: str
 
     def __str__(self):
-        res = f"Телеграм ИД - {self.tg_id}\n"
-        res += f"Телеграм имя - {self.tg_username}\n"
-        res += f"ИД - <b>{self.id}</b>\n"
+        res = ""
+        #res = f"Телеграм ИД - {self.tg_id}\n"
+        res += f"Login - {self.tg_username}\n"
+        res += f"ID - <b>{self.id}</b>\n"
         res += f"ФИО - {self.fullname}\n"
         res += f"Телефон - {self.phone}\n"
-        res += f"e-mail - {self.email}\n"
+        res += f"Email - {self.email}\n"
         res += f"Модель приставки - {self.stb_model}\n"
         res += f"MRF - {self.mrf}\n"
         res += f"SAN - {self.san}\n"
-        res += f"MAK - {self.mak}\n"
+        res += f"MAC - {self.mak}\n"
         return res
 
     def main_info(self):
-        res = f"ИД - <b>{self.id}</b>\n"
+        res = f"ID - <b>{self.id}</b>\n"
         res += f"{self.tg_username}\n"
         res += f"MRF - {self.mrf}\n"
-        res += f"MAK - {self.mak}\n"
+        res += f"MAC - {self.mak}\n"
         return res
 
     def user_from_g_table(self, data: List):

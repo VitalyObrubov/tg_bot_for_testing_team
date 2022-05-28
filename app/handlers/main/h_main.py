@@ -48,7 +48,6 @@ async def handle_main_command(message: types.Message, state: FSMContext):
         await MainOrder.waiting_for_input_info.set()
     
     elif message.text == MAIN_MENU["check"]: 
-        return
         await message.answer(CHECK_MESS)
     
     elif message.text == MAIN_MENU["info"]: 
@@ -62,8 +61,10 @@ async def handle_input_info(message: types.Message, state: FSMContext):
     if message.text == CANCEL_INPUT:
         pass # Сюда не доходит перехватывается раньше
     if message.text in [SEND_PROBLEM["send"],SEND_IDEA["send"],SEND_QUESTION["send"]]:
-        await message.answer(MESSAGE_SENDING)
         user_data = await state.get_data()
+        #await message.answer(MESSAGE_SENDING)
+        await message.answer(MESSAGE_SENDED) 
+        await main_start(message, state)        
         dir_link = "Файлы отсутствуют"
         dir_id = None
         if len(user_data["files"]):
@@ -93,8 +94,6 @@ async def handle_input_info(message: types.Message, state: FSMContext):
                 await bot.aiobot.send_document(chat_id=bot.config.contacts.admin_chanel_id,document=file_id,caption=caption)
             elif file.file_path.startswith("music"):                
                 await bot.aiobot.send_audio(chat_id=bot.config.contacts.admin_chanel_id,audio=file_id,caption=caption)
-        await message.answer(MESSAGE_SENDED)
-        await main_start(message, state)
 
     else:
         big_file = False

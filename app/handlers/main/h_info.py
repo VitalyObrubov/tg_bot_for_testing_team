@@ -55,14 +55,15 @@ async def handle_change_user_info(message: types.Message, state: FSMContext):
     mess["text"] = message.text
     mess["file_links"] = ""
 
+    await message.answer(MESSAGE_SENDED)
+    await info_start(message, state)
+    
     mess_id = await bot.database.write_user_request(user, bot, mess) # заносим сообщение в базу
 
     # отправляем в чат админов сообщение о новом пользователе
     await bot.aiobot.send_message(bot.config.contacts.admin_chanel_id, 
                                   TO_ADMIN_USER_CHANGE_INFO.format(mess_id) 
                                   + user.main_info() + "\n" + message.text)
-    await message.answer(MESSAGE_SENDED)
-    await info_start(message, state)
 
 def register_handlers_info(dp: Dispatcher):
     dp.register_message_handler(info_start, state=InfoOrder.waiting_for_user_info, text = CHANGE_USER_DATA["back"])
