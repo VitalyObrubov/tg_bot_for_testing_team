@@ -27,21 +27,21 @@ async def handle_main_command(message: types.Message, state: FSMContext):
     await state.update_data(mess_text=[])
     await state.update_data(files={})
     if message.text == MAIN_MENU["problems"]: 
-        return
+        #return
         await state.update_data(request_type="problems")
         keyboard = make_keyboard(SEND_PROBLEM,"usual",2)
         await message.answer(ASK_PROBLEM, reply_markup=keyboard)
         await MainOrder.waiting_for_input_info.set()
     
     elif message.text == MAIN_MENU["ideas"]:
-        return
+        #return
         await state.update_data(request_type="ideas")
         keyboard = make_keyboard(SEND_IDEA,"usual",2)
         await message.answer(ASK_IDEA, reply_markup=keyboard)
         await MainOrder.waiting_for_input_info.set()
     
     elif message.text == MAIN_MENU["questions"]:
-        return
+        #return
         await state.update_data(request_type="questions") 
         keyboard = make_keyboard(SEND_QUESTION,"usual",2)
         await message.answer(ASK_QUESTION, reply_markup=keyboard)
