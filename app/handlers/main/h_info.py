@@ -55,7 +55,7 @@ async def handle_change_user_info(message: types.Message, state: FSMContext):
     mess["text"] = message.text
     mess["file_links"] = ""
 
-    await message.answer(MESSAGE_SENDED)
+    await message.answer(USER_IFO_REQUEST_SEND)
     await info_start(message, state)
     
     mess_id = await bot.database.write_user_request(user, bot, mess) # заносим сообщение в базу
