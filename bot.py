@@ -7,7 +7,7 @@ async def main():
     # инициализация объектов бота и диспетчера
     conf_file = os.environ.get("SETTINGS_MODULE")
     if not conf_file:
-        conf_file = "config_dep.yml"    
+        conf_file = "config.yml"    
     bot = await setup_bot(config_path=os.path.join(os.path.dirname(__file__), conf_file))
 
     # Запуск поллинга
