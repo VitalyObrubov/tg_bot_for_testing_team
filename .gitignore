@@ -135,3 +135,5 @@ config_test.yml
 gsheetscred.json
 gsheetscred_copy.json
 media/
+temp/
+

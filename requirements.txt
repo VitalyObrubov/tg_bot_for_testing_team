@@ -1,5 +1,4 @@
 aiogram==2.20
-telethon==1.24.0
 PyYAML==6.0
 gspread-asyncio==1.5.3
 google-api-python-client==2.47.0
