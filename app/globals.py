@@ -56,8 +56,8 @@ class User:
     def __str__(self):
         res = ""
         #res = f"Телеграм ИД - {self.tg_id}\n"
-        res += f"Login - {self.tg_username}\n"
         res += f"ID - <b>{self.id}</b>\n"
+        res += f"Login - {self.tg_username}\n"
         res += f"ФИО - {self.fullname}\n"
         res += f"Телефон - {self.phone}\n"
         res += f"Email - {self.email}\n"
@@ -70,8 +70,10 @@ class User:
     def main_info(self):
         res = f"ID - <b>{self.id}</b>\n"
         res += f"{self.tg_username}\n"
-        res += f"MRF - {self.mrf}\n"
-        res += f"MAC - {self.mak}\n"
+        res += f"{self.phone}\n"
+        res += f"{self.mrf}\n"
+        res += f"{self.mrf}\n"
+        res += f"{self.mak}\n"
         return res
 
     def user_from_g_table(self, data: List):

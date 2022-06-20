@@ -1,10 +1,6 @@
 bot:  
   admin_id: 101
-  name: t_bot
-  username: t_bot
   token: 46879:Asdfgdfgs657
-  api_id: 150
-  api_hash: 5f8599d664
 database:
   cred_file: gsheetscred.json
   table_id: cYbPQrmmVQ9QjhaNUJcALQ
@@ -13,3 +9,4 @@ contacts:
   common_chanel: hghjfgh
   admin_chanel: fgjghfg
   admin_chanel_id: -10015165464
+  new_user_chanel_id: -10015165464

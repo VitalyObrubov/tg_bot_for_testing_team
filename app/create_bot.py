@@ -15,7 +15,7 @@ def setup_logging(bot: Bot) -> None:
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
     )
-    bot.logger = logging.getLogger(bot.config.bot.username)
+    bot.logger = logging.getLogger("Bot log")
 
 
 def setup_aiogram(bot: Bot) -> None:

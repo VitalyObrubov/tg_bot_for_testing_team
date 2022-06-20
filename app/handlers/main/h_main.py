@@ -62,7 +62,9 @@ async def handle_input_info(message: types.Message, state: FSMContext):
         pass # Сюда не доходит перехватывается раньше
     if message.text in [SEND_PROBLEM["send"],SEND_IDEA["send"],SEND_QUESTION["send"]]:
         user_data = await state.get_data()
-        #await message.answer(MESSAGE_SENDING)
+        if (len(user_data["files"])==0 and len(user_data["mess_text"])==0):
+            await message.answer(EMPTY_MESSAGE)
+            return    
         await message.answer(MESSAGE_SENDED) 
         await main_start(message, state)        
         dir_link = "Файлы отсутствуют"
@@ -72,12 +74,12 @@ async def handle_input_info(message: types.Message, state: FSMContext):
             dir_link = "https://drive.google.com/drive/folders/" + dir_id
         mess = {}
         mess["file_links"] = dir_link
-        mess["text"] = ", ".join(user_data["mess_text"])
+        mess["text"] = "\n".join(user_data["mess_text"])
         mess["request_type"] = user_data["request_type"]
         mess_id = await bot.database.write_user_request(user, bot, mess) # заносим сообщение в базу
         if dir_id: # Если директория с файлами была создана, меняем ее имя
             bot.g_drive.change_folder_name(dir_id, str(mess_id))
-        # отправляем в чат админов сообщение о новом пользователе
+        # отправляем в чат админов сообщение о новом запросе
         await bot.aiobot.send_message(bot.config.contacts.admin_chanel_id, 
                                     TO_ADMIN_NEW[mess["request_type"]].format(mess_id) 
                                     + user.main_info() + "\n" + mess["text"] + 

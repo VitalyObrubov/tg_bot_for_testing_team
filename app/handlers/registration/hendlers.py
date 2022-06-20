@@ -173,7 +173,7 @@ async def registration_mak(message: types.Message, state: FSMContext):
         user.row_num = await bot.database.write_user_to_db(user, bot) # заносим пользователя в базу
         bot.users[user.tg_id] = user
         # отправляем в чат админов сообщение о новом пользователе
-        await bot.aiobot.send_message(bot.config.contacts.admin_chanel_id, "Добавлен пользователь\n" + str(user))
+        await bot.aiobot.send_message(bot.config.contacts.new_user_chanel_id, "Добавлен пользователь\n" + str(user))
         # финальные сообщения
         keyboard = make_keyboard(START,"usual",1)
         await message.answer(FIN_MESS.format(user.id), reply_markup=keyboard)

@@ -9,12 +9,8 @@ if typing.TYPE_CHECKING:
 
 @dataclass
 class BotConfig:
-    name: str
-    username: str
     token: str
     admin_id: int
-    api_id: int
-    api_hash: str
 
 @dataclass
 class DatabaseConfig:
@@ -27,6 +23,8 @@ class ContactsConfig:
     common_chanel: str
     admin_chanel: str
     admin_chanel_id: int
+    new_user_chanel_id: int
+
 
 @dataclass
 class Config:
@@ -42,12 +40,8 @@ def setup_config(bot: "Bot", config_path: str) -> None:
 
     bot.config = Config(
         bot=BotConfig(
-            name=raw_config["bot"]["name"],
-            username=raw_config["bot"]["username"],
             token=raw_config["bot"]["token"],
-            admin_id=raw_config["bot"]["admin_id"],  
-            api_id=raw_config["bot"]["api_id"],  
-            api_hash=raw_config["bot"]["api_hash"],                      
+            admin_id=raw_config["bot"]["admin_id"],                       
         ),
         db=DatabaseConfig(
             table_id=raw_config["database"]["table_id"],
@@ -58,5 +52,6 @@ def setup_config(bot: "Bot", config_path: str) -> None:
             common_chanel=raw_config["contacts"]["common_chanel"],
             admin_chanel=raw_config["contacts"]["admin_chanel"],
             admin_chanel_id=raw_config["contacts"]["admin_chanel_id"],
+            new_user_chanel_id=raw_config["contacts"]["new_user_chanel_id"],
         ),
     )
