@@ -1,6 +1,7 @@
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from asyncio import sleep
 
 from app.globals import bot
 from app.handlers.main.answers import *
@@ -87,7 +88,8 @@ async def handle_input_info(message: types.Message, state: FSMContext):
         files = user_data["files"]
         for file_id in files:
             file = await bot.aiobot.get_file(file_id)
-            caption = files[file_id]["caption"]
+            #caption = files[file_id]["caption"]
+            caption = ''
             if file.file_path.startswith("photos"):                
                 await bot.aiobot.send_photo(chat_id=bot.config.contacts.admin_chanel_id,photo=file_id,caption=caption)
             elif file.file_path.startswith("videos"):                
@@ -96,7 +98,7 @@ async def handle_input_info(message: types.Message, state: FSMContext):
                 await bot.aiobot.send_document(chat_id=bot.config.contacts.admin_chanel_id,document=file_id,caption=caption)
             elif file.file_path.startswith("music"):                
                 await bot.aiobot.send_audio(chat_id=bot.config.contacts.admin_chanel_id,audio=file_id,caption=caption)
-
+            await sleep(0.1) #ограничивает число сообщений в секунду, чтобы учетка не заблокировалась
     else:
         big_file = False
         MB20 = 20480000

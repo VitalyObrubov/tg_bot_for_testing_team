@@ -9,8 +9,7 @@ if TYPE_CHECKING:
     from app.database.g_spread_accessor import GoogleDatabase
     from app.database.g_drive_accessor import GoogleDrive
 
-class Bot():
-
+class Bot:
     config: Optional[Config] = None
     aiobot: Optional[aioBot] = None # непосредственно сам бот aiogram 
     dp: Optional[Dispatcher] = None # его диспетчер
@@ -72,7 +71,7 @@ class User:
         res += f"{self.tg_username}\n"
         res += f"{self.phone}\n"
         res += f"{self.mrf}\n"
-        res += f"{self.mrf}\n"
+        res += f"{self.san}\n"
         res += f"{self.mak}\n"
         return res
 

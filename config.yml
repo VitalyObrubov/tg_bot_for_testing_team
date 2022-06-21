@@ -8,5 +8,5 @@ database:
 contacts:
   common_chanel: hghjfgh
   admin_chanel: fgjghfg
-  admin_chanel_id: -10015165464
-  new_user_chanel_id: -10015165464
+  admin_chanel_id: -10015165464 #группа куда отправляются запросы тестеров
+  new_user_chanel_id: -10015165464 #группа куда отправляются сообщения о новых пользователях
