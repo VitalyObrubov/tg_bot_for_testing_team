@@ -20,8 +20,6 @@ class DatabaseConfig:
 
 @dataclass
 class ContactsConfig:
-    common_chanel: str
-    admin_chanel: str
     admin_chanel_id: int
     new_user_chanel_id: int
 
@@ -49,8 +47,6 @@ def setup_config(bot: "Bot", config_path: str) -> None:
             g_drive_media_folder=raw_config["database"]["g_drive_media_folder"],
         ),
         contacts=ContactsConfig(
-            common_chanel=raw_config["contacts"]["common_chanel"],
-            admin_chanel=raw_config["contacts"]["admin_chanel"],
             admin_chanel_id=raw_config["contacts"]["admin_chanel_id"],
             new_user_chanel_id=raw_config["contacts"]["new_user_chanel_id"],
         ),

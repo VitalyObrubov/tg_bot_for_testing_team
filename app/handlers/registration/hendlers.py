@@ -177,7 +177,7 @@ async def registration_mak(message: types.Message, state: FSMContext):
         # финальные сообщения
         keyboard = make_keyboard(START,"usual",1)
         await message.answer(FIN_MESS.format(user.id), reply_markup=keyboard)
-        await message.answer(FIN_MESS2.format(bot.config.contacts.common_chanel), reply_markup=keyboard)
+        await message.answer(FIN_MESS2, reply_markup=keyboard)
         await state.finish()
 
 

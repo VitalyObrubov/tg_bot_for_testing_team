@@ -6,7 +6,5 @@ database:
   table_id: cYbPQrmmVQ9QjhaNUJcALQ
   g_drive_media_folder: c8oIPLZnbj_0vKX7o
 contacts:
-  common_chanel: hghjfgh
-  admin_chanel: fgjghfg
   admin_chanel_id: -10015165464 #группа куда отправляются запросы тестеров
   new_user_chanel_id: -10015165464 #группа куда отправляются сообщения о новых пользователях
