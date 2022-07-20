@@ -8,8 +8,17 @@ def is_email(email: str):
     else:
         return False
 
+
+def normalize(m: str):
+    """ Normalize a MAC address """
+    m = re.sub("[.:-]", "", m)
+    n =  "%s:%s:%s:%s:%s:%s" % (m[0:2], m[2:4], m[4:6], m[6:8], m[8:10], m[10:])
+    return n
+
+
 def is_mak(mac: str):
     mac = mac.replace(" ", "")
+    mac = normalize(mac)
     mac = mac.upper()
     mac = mac.replace("А", "A") # рус в англ
     mac = mac.replace("В", "B")
@@ -17,7 +26,6 @@ def is_mak(mac: str):
     mac = mac.replace("Е", "E")
     mac = mac.replace("O", "0") # О англ в 0
     mac = mac.replace("О", "0") # О рус в 0
- 
 
     if re.match("[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\\1[0-9a-f]{2}){4}$", mac.lower()):
         return mac

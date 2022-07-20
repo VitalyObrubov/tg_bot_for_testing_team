@@ -37,7 +37,7 @@ async def cmd_reload_users(message: types.Message):
         await message.answer("Недостаточно прав")
 
 def register_handlers_common(dp: Dispatcher):
-    dp.register_message_handler(cmd_start, commands="start", chat_type=types.ChatType.PRIVATE)
+    dp.register_message_handler(cmd_start, commands="start", state="*", chat_type=types.ChatType.PRIVATE)
     dp.register_message_handler(cmd_cancel, commands="cancel", state="*", chat_type=types.ChatType.PRIVATE)
     dp.register_message_handler(cmd_reload_users, commands="reload_users", state="*", chat_type=types.ChatType.PRIVATE)
 
